@@ -1,0 +1,33 @@
+version: "3.3"
+
+services:
+  peertube:
+    image: harbor.rand0m.me/public/peertube
+    env_file:
+      - peertube.env
+    ports:
+      - "1935:1935" # If you don't want to use the live feature, you can comment this line
+      - "9000:9000" # If you provide your own webserver and reverse-proxy, otherwise not suitable for production
+    volumes:
+      - ./data/data:/data
+      - ./data/config:/config
+    depends_on:
+      - postgres
+      - redis
+    restart: "always"
+
+  postgres:
+    image: postgres:13-alpine
+    env_file:
+      - peertube.env
+    volumes:
+      - ./data/pgsql:/var/lib/postgresql/data
+    restart: "always"
+
+  redis:
+    image: redis:6-alpine
+    env_file:
+      - peertube.env
+    volumes:
+      - ./data/redis:/data
+    restart: "always"
